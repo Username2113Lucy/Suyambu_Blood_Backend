@@ -6,24 +6,32 @@ import dotenv from 'dotenv';
 import donorRoutes from './routes/Donor_Reg.js';
 import bloodRequestRoutes from './routes/Request_Blood.js';
 
-
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-// CORS Configuration
-app.use(cors({
+// CORS Configuration - FIXED VERSION
+const corsOptions = {
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://suyambu-blood-frontend.vercel.app/'
+    'https://suyambu-blood-frontend.vercel.app', // REMOVED trailing slash
+    'https://suyambu-blood-frontend.vercel.app'  // Keep both if needed
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // Important for preflight requests
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Handle preflight OPTIONS requests for all routes
+app.options('*', cors(corsOptions));
+
+// Other middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
